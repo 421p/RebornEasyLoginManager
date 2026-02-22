@@ -1,8 +1,0 @@
-{
-  "name": "easyloginmanager",
-  "version-string": "1.0.0",
-  "dependencies": [
-    "wxwidgets"
-  ],
-  "builtin-baseline": "81389868770c8d1976a440186985026938cf1517"
-}
