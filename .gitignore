@@ -1,0 +1,33 @@
+# CMake build directories
+build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+*.cmake
+!CMakeLists.txt
+
+# CLion IDE
+.idea/
+
+# Compiled binaries
+*.exe
+*.app
+*.out
+EasyLoginManager
+
+# Object files
+*.o
+*.obj
+
+# macOS
+.DS_Store
+*.dmg
+EasyLoginManager.app/
+
+# Windows
+*.zip
+dist/
+
+# vcpkg
+vcpkg_installed/

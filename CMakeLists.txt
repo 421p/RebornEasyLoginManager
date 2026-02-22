@@ -12,10 +12,15 @@ find_package(wxWidgets REQUIRED COMPONENTS core base)
 include(${wxWidgets_USE_FILE})
 
 # Add executable
+if(WIN32)
+    set(EXE_RESOURCES resources.rc)
+endif()
+
 add_executable(EasyLoginManager 
         main.cpp
         AccountDialog.cpp
         MainFrame.cpp
+        ${EXE_RESOURCES}
 )
 
 # Link wxWidgets
