@@ -6,6 +6,7 @@
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
 #include <wx/icon.h>
+#include <wx/artprov.h>
 
 MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, L("TITLE"), wxDefaultPosition, wxSize(650, 500)) {
 #ifdef __WXMSW__
@@ -25,6 +26,13 @@ void MainFrame::SetupUI() {
     m_btnAdd = new wxButton(this, wxID_ADD, L("ADD_ACCOUNT"));
     m_btnSettings = new wxButton(this, wxID_ANY, L("MANAGER_SETTINGS"));
 
+#ifdef __WXMSW__
+    m_btnOpen->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_OPEN, wxART_BUTTON));
+    m_btnSave->SetBitmap(wxArtProvider::GetBitmap(wxART_FILE_SAVE, wxART_BUTTON));
+    m_btnAdd->SetBitmap(wxArtProvider::GetBitmap(wxART_NEW, wxART_BUTTON));
+    m_btnSettings->SetBitmap(wxArtProvider::GetBitmap(wxART_EXECUTABLE_FILE, wxART_BUTTON));
+#endif
+
     toolbarSizer->Add(m_btnOpen, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
     toolbarSizer->Add(m_btnSave, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
     toolbarSizer->Add(m_btnAdd, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
@@ -33,8 +41,8 @@ void MainFrame::SetupUI() {
     toolbarSizer->AddStretchSpacer();
 
     wxArrayString choices;
-    choices.Add(wxString::FromUTF8("🇺🇸"));
-    choices.Add(wxString::FromUTF8("🇫🇷"));
+    choices.Add("EN");
+    choices.Add("FR");
     m_choiceLang = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
     
     wxString currentLang = LanguageManager::Get().GetCurrentLanguage();
@@ -47,6 +55,9 @@ void MainFrame::SetupUI() {
 
     // List
     m_listView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_SINGLE_SEL);
+#ifdef __WXMSW__
+    m_listView->SetWindowStyleFlag(m_listView->GetWindowStyleFlag() | wxLC_HRULES | wxLC_VRULES);
+#endif
     m_listView->AppendColumn(L("ACCOUNT_ID"), wxLIST_FORMAT_LEFT, 150);
     m_listView->AppendColumn(L("DESCRIPTION"), wxLIST_FORMAT_LEFT, 250);
     mainSizer->Add(m_listView, 1, wxEXPAND | wxALL, 10);
@@ -57,6 +68,13 @@ void MainFrame::SetupUI() {
     m_btnDown = new wxButton(this, wxID_DOWN, L("MOVE_DOWN"));
     m_btnEdit = new wxButton(this, wxID_EDIT, L("EDIT"));
     m_btnDel = new wxButton(this, wxID_DELETE, L("DELETE"));
+
+#ifdef __WXMSW__
+    m_btnUp->SetBitmap(wxArtProvider::GetBitmap(wxART_GO_UP, wxART_BUTTON));
+    m_btnDown->SetBitmap(wxArtProvider::GetBitmap(wxART_GO_DOWN, wxART_BUTTON));
+    m_btnEdit->SetBitmap(wxArtProvider::GetBitmap(wxART_EDIT, wxART_BUTTON));
+    m_btnDel->SetBitmap(wxArtProvider::GetBitmap(wxART_DELETE, wxART_BUTTON));
+#endif
 
     footerSizer->Add(m_btnUp, 0, wxALL, 5);
     footerSizer->Add(m_btnDown, 0, wxALL, 5);

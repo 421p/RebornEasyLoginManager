@@ -1,5 +1,6 @@
 #include "AccountDialog.h"
 #include "LanguageManager.h"
+#include <wx/artprov.h>
 
 AccountDialog::AccountDialog(wxWindow* parent, const wxString& title, const Account& acc)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
@@ -15,7 +16,10 @@ AccountDialog::AccountDialog(wxWindow* parent, const wxString& title, const Acco
     gridSizer->Add(new wxStaticText(this, wxID_ANY, L("PASSWORD_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
     auto* passSizer = new wxBoxSizer(wxHORIZONTAL);
     m_passCtrl = new wxTextCtrl(this, wxID_ANY, acc.password, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-    m_revealBtn = new wxButton(this, wxID_ANY, "👁", wxDefaultPosition, wxSize(30, -1), wxBU_EXACTFIT);
+    m_revealBtn = new wxButton(this, wxID_ANY, "View", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+#ifdef __WXMSW__
+    m_revealBtn->SetBitmap(wxArtProvider::GetBitmap(wxART_FIND, wxART_BUTTON));
+#endif
     passSizer->Add(m_passCtrl, 1, wxEXPAND);
     passSizer->Add(m_revealBtn, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, 5);
     gridSizer->Add(passSizer, 1, wxEXPAND);
@@ -34,7 +38,7 @@ AccountDialog::AccountDialog(wxWindow* parent, const wxString& title, const Acco
 
 void AccountDialog::OnToggleReveal(wxCommandEvent&) {
     m_revealed = !m_revealed;
-    m_revealBtn->SetLabel(m_revealed ? "🙈" : "👁");
+    m_revealBtn->SetLabel(m_revealed ? "Hide" : "View");
     wxString val = m_passCtrl->GetValue();
     long style = m_passCtrl->GetWindowStyleFlag();
 

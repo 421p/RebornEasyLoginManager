@@ -1,4 +1,4 @@
-# 🛡️ Reborn Easy Login Manager
+# Reborn Easy Login Manager
 
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)](https://github.com/l2reborn/EasyLoginManager)
 [![Download](https://img.shields.io/badge/download-latest-blue)](https://github.com/421p/RebornEasyLoginManager/releases/)
@@ -7,12 +7,12 @@ A lightweight, cross-platform account manager designed for Lineage II players. S
 
 ---
 
-### 📥 Download
+### Download
 
 You can find the latest releases for Windows and macOS here:
 [**Download Latest Version**](https://github.com/421p/RebornEasyLoginManager/releases/)
 
-### ✨ Features
+### Features
 
 - **Multi-Account Management**: Easily add, edit, and organize multiple accounts.
 - **Inline Editing**: Quickly update account descriptions with double-click support.
@@ -22,7 +22,7 @@ You can find the latest releases for Windows and macOS here:
   - **macOS**: Native `.app` bundle with DMG installer.
 - **Modern UI**: Built with wxWidgets for a native look and feel on all platforms.
 
-### 🚀 Getting Started
+### Getting Started
 
 #### Prerequisites
 - **Windows**: `vcpkg` (for dependency management).
@@ -50,17 +50,17 @@ cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
 
-### 🛠️ Technical Details
+### Technical Details
 
 - **Language Support**: Uses a custom `LanguageManager` to handle JSON-based translations.
 - **Windows Resource Integration**: Translation files are compiled into the Windows executable as `RCDATA` resources, allowing for a single-file distribution without external dependency folders.
 - **Static Linking**: On Windows, it uses static linking to ensure the executable runs on systems without requiring additional DLLs.
 
-### 🌍 Translations
+### Translations
 
 We currently support:
-- 🇺🇸 English (`en.json`)
-- 🇫🇷 French (`fr.json`)
+- English (`en.json`)
+- French (`fr.json`)
 
 To contribute a new translation, simply add a new `.json` file to the `i18n/` directory and update the `LanguageManager` and UI.
 
