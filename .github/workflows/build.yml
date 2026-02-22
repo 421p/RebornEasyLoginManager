@@ -53,6 +53,11 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: VCPKG Setup
+        run: |
+          cd $env:VCPKG_INSTALLATION_ROOT
+          git fetch --unshallow || true
+          git fetch origin 81389868770c8d1976a440186985026938cf1517
       - name: Configure CMake
         run: |
           cmake -S . -B build `
