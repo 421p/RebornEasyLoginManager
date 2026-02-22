@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Find wxWidgets
 if(VCPKG_TARGET_TRIPLET MATCHES "static")
     set(wxWidgets_USE_STATIC ON)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 # Try CONFIG mode first (best for vcpkg/manifest)
