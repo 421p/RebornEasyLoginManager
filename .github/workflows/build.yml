@@ -56,8 +56,7 @@ jobs:
       - name: VCPKG Setup
         run: |
           cd $env:VCPKG_INSTALLATION_ROOT
-          git fetch --unshallow || true
-          git fetch origin 81389868770c8d1976a440186985026938cf1517
+          git fetch origin 81389868770c8d1976a440186985026938cf1517 --depth=1 || git fetch origin master --depth=1 || git fetch origin --depth=1
       - name: Configure CMake
         run: |
           cmake -S . -B build `
