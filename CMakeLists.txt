@@ -1,13 +1,22 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.15)
 project(EasyLoginManager)
+
+# Ensure MSVC runtime library selection via CMAKE_MSVC_RUNTIME_LIBRARY
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# Force static CRT for MSVC on Windows when using static triplet
+if(WIN32 AND VCPKG_TARGET_TRIPLET MATCHES "static")
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
 # Find wxWidgets
 if(VCPKG_TARGET_TRIPLET MATCHES "static")
     set(wxWidgets_USE_STATIC ON)
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 endif()
 
 # Try CONFIG mode first (best for vcpkg/manifest)
