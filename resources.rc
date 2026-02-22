@@ -1,1 +1,5 @@
 IDI_ICON1 ICON "icon.ico"
+
+// Translations
+ID_I18N_EN RCDATA "i18n/en.json"
+ID_I18N_FR RCDATA "i18n/fr.json"

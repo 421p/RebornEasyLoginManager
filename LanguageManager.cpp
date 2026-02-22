@@ -4,6 +4,10 @@
 #include <wx/stdpaths.h>
 #include <wx/log.h>
 
+#ifdef __WINDOWS__
+#include <wx/msw/private.h>
+#endif
+
 // For simple JSON parsing without external dependencies, 
 // since we know the structure is simple.
 
@@ -13,32 +17,57 @@ LanguageManager& LanguageManager::Get() {
 }
 
 bool LanguageManager::LoadLanguage(const wxString& langCode) {
-    wxString exePath = wxStandardPaths::Get().GetExecutablePath();
-    wxFileName fn(exePath);
-    wxString resPath = fn.GetPath();
-    
-#ifdef __WXOSX__
-    // On macOS, resources are in Contents/Resources
-    if (resPath.Contains(".app/Contents/MacOS")) {
-        resPath = resPath.BeforeLast('/') + "/Resources";
+    wxString content;
+    bool loaded = false;
+
+#ifdef __WINDOWS__
+    // Try to load from resources on Windows
+    wxString resName = "ID_I18N_" + langCode.Upper();
+    HRSRC hRes = FindResource(wxGetInstance(), resName.t_str(), RT_RCDATA);
+    if (hRes) {
+        HGLOBAL hData = LoadResource(wxGetInstance(), hRes);
+        if (hData) {
+            DWORD size = SizeofResource(wxGetInstance(), hRes);
+            const char* ptr = (const char*)LockResource(hData);
+            if (ptr && size > 0) {
+                content = wxString::FromUTF8(ptr, size);
+                loaded = !content.IsEmpty();
+            }
+        }
     }
 #endif
 
-    wxString filePath = resPath + "/i18n/" + langCode + ".json";
-    
-    // Fallback for development (if i18n is in the current directory)
-    if (!wxFile::Exists(filePath)) {
-        filePath = "i18n/" + langCode + ".json";
+    if (!loaded) {
+        wxString exePath = wxStandardPaths::Get().GetExecutablePath();
+        wxFileName fn(exePath);
+        wxString resPath = fn.GetPath();
+        
+#ifdef __WXOSX__
+        // On macOS, resources are in Contents/Resources
+        if (resPath.Contains(".app/Contents/MacOS")) {
+            resPath = resPath.BeforeLast('/') + "/Resources";
+        }
+#endif
+
+        wxString filePath = resPath + "/i18n/" + langCode + ".json";
+        
+        // Fallback for development (if i18n is in the current directory)
+        if (!wxFile::Exists(filePath)) {
+            filePath = "i18n/" + langCode + ".json";
+        }
+        
+        if (wxFile::Exists(filePath)) {
+            wxFile file(filePath);
+            file.ReadAll(&content);
+            loaded = !content.IsEmpty();
+        }
     }
-    
-    if (!wxFile::Exists(filePath)) {
-        wxLogError("Language file not found: %s", filePath);
+
+    if (!loaded) {
+        wxLogError("Language file not found or empty for: %s", langCode);
         return false;
     }
 
-    wxFile file(filePath);
-    wxString content;
-    file.ReadAll(&content);
     m_strings.clear();
     m_currentLang = langCode;
     

@@ -87,7 +87,6 @@ jobs:
         run: |
           mkdir release
           cp build/Release/EasyLoginManager.exe release/
-          cp -r build/Release/i18n release/
           Compress-Archive -Path release/* -DestinationPath EasyLoginManager-Windows.zip
         shell: pwsh
 
