@@ -18,7 +18,7 @@ jobs:
         run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
       - name: Build
         run: cmake --build build --config Release
-      - name: Create DMG
+      - name: Create Bundle
         run: |
           mkdir -p EasyLoginManager.app/Contents/MacOS
           cp build/EasyLoginManager EasyLoginManager.app/Contents/MacOS/
@@ -47,12 +47,13 @@ jobs:
           brew install dylibbundler
           dylibbundler -od -b -x EasyLoginManager.app/Contents/MacOS/EasyLoginManager -d EasyLoginManager.app/Contents/libs/
           
-          zip -r ../EasyLoginManager-macOS.zip EasyLoginManager.app
+          # Create DMG
+          hdiutil create -volname "EasyLoginManager" -srcfolder EasyLoginManager.app -ov -format UDZO EasyLoginManager.dmg
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EasyLoginManager-macOS
-          path: EasyLoginManager-macOS.zip
+          path: EasyLoginManager.dmg
 
   build-windows:
     runs-on: windows-latest
@@ -103,6 +104,6 @@ jobs:
         with:
           files: |
             EasyLoginManager-Windows.zip
-            EasyLoginManager-macOS.zip
+            EasyLoginManager.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
