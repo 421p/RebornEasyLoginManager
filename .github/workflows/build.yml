@@ -20,33 +20,9 @@ jobs:
         run: cmake --build build --config Release
       - name: Create Bundle
         run: |
-          mkdir -p EasyLoginManager.app/Contents/MacOS
-          mkdir -p EasyLoginManager.app/Contents/Resources
-          cp build/EasyLoginManager EasyLoginManager.app/Contents/MacOS/
-          cp icon.icns EasyLoginManager.app/Contents/Resources/
+          # Use the bundle created by CMake
+          mv build/EasyLoginManager.app .
           
-          # Create a minimal Info.plist
-          cat <<EOF > EasyLoginManager.app/Contents/Info.plist
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-              <key>CFBundleExecutable</key>
-              <string>EasyLoginManager</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.l2reborn.easyloginmanager</string>
-              <key>CFBundleName</key>
-              <string>EasyLoginManager</string>
-              <key>CFBundlePackageType</key>
-              <string>APPL</string>
-              <key>CFBundleIconFile</key>
-              <string>icon.icns</string>
-              <key>LSMinimumSystemVersion</key>
-              <string>10.13</string>
-          </dict>
-          </plist>
-          EOF
-
           # Bundle dependencies
           brew install dylibbundler
           dylibbundler -od -b -x EasyLoginManager.app/Contents/MacOS/EasyLoginManager -d EasyLoginManager.app/Contents/libs/
@@ -92,8 +68,10 @@ jobs:
         run: |
           mkdir dist
           copy build\Release\EasyLoginManager.exe dist\
-          cd dist
-          7z a ..\EasyLoginManager-Windows.zip EasyLoginManager.exe
+          if (Test-Path build\Release\i18n) {
+            xcopy /E /I build\Release\i18n dist\i18n
+          }
+          7z a EasyLoginManager-Windows.zip .\dist\*
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
