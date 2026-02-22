@@ -1,0 +1,108 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main", "master" ]
+    tags: [ "v*" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install wxWidgets
+        run: brew install wxwidgets
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Create DMG
+        run: |
+          mkdir -p EasyLoginManager.app/Contents/MacOS
+          cp build/EasyLoginManager EasyLoginManager.app/Contents/MacOS/
+          
+          # Create a minimal Info.plist
+          cat <<EOF > EasyLoginManager.app/Contents/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>EasyLoginManager</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.l2reborn.easyloginmanager</string>
+              <key>CFBundleName</key>
+              <string>EasyLoginManager</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>LSMinimumSystemVersion</key>
+              <string>10.13</string>
+          </dict>
+          </plist>
+          EOF
+
+          # Bundle dependencies
+          brew install dylibbundler
+          dylibbundler -od -b -x EasyLoginManager.app/Contents/MacOS/EasyLoginManager -d EasyLoginManager.app/Contents/libs/
+          
+          zip -r ../EasyLoginManager-macOS.zip EasyLoginManager.app
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyLoginManager-macOS
+          path: EasyLoginManager-macOS.zip
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSVC
+        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install wxWidgets (vcpkg)
+        run: |
+          vcpkg install wxwidgets:x64-windows-static
+      - name: Configure CMake
+        run: |
+          cmake -S . -B build `
+            -DCMAKE_BUILD_TYPE=Release `
+            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Package
+        run: |
+          mkdir dist
+          copy build\Release\EasyLoginManager.exe dist\
+          cd dist
+          7z a ..\EasyLoginManager-Windows.zip EasyLoginManager.exe
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyLoginManager-Windows
+          path: EasyLoginManager-Windows.zip
+
+  release:
+    needs: [build-macos, build-windows]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: EasyLoginManager-Windows
+      - name: Download macOS Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: EasyLoginManager-macOS
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            EasyLoginManager-Windows.zip
+            EasyLoginManager-macOS.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Find wxWidgets
+if(VCPKG_TARGET_TRIPLET MATCHES "static")
+    set(wxWidgets_USE_STATIC ON)
+endif()
 find_package(wxWidgets REQUIRED COMPONENTS core base)
 include(${wxWidgets_USE_FILE})
 
