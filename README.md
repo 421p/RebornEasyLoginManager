@@ -1,6 +1,5 @@
 # 🛡️ Reborn Easy Login Manager
 
-[![Build and Release](https://github.com/l2reborn/EasyLoginManager/actions/workflows/build.yml/badge.svg)](https://github.com/l2reborn/EasyLoginManager/actions/workflows/build.yml)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)](https://github.com/l2reborn/EasyLoginManager)
 [![Download](https://img.shields.io/badge/download-latest-blue)](https://github.com/421p/RebornEasyLoginManager/releases/)
 
