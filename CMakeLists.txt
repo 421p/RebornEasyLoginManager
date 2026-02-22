@@ -15,7 +15,7 @@ if(NOT wxWidgets_FOUND)
     find_package(wxWidgets REQUIRED COMPONENTS core base)
 endif()
 
-if(wxWidgets_FOUND)
+if(wxWidgets_FOUND AND wxWidgets_USE_FILE)
     include(${wxWidgets_USE_FILE})
 endif()
 
@@ -54,7 +54,11 @@ else()
 endif()
 
 # Link wxWidgets
-target_link_libraries(EasyLoginManager ${wxWidgets_LIBRARIES})
+if(wxWidgets_LIBRARIES)
+    target_link_libraries(EasyLoginManager ${wxWidgets_LIBRARIES})
+else()
+    target_link_libraries(EasyLoginManager wx::core wx::base)
+endif()
 
 # macOS specific: set bundle properties
 if(APPLE)
