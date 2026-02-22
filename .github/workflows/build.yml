@@ -38,8 +38,43 @@ jobs:
           name: EasyLoginManager-macOS
           path: EasyLoginManager.dmg
 
+  build-windows:
+    runs-on: windows-latest
+    env:
+      VCPKG_DEFAULT_BINARY_CACHE: ${{ github.workspace }}/vcpkg_cache
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup vcpkg Binary Cache
+        run: mkdir -p ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+        shell: bash
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.VCPKG_DEFAULT_BINARY_CACHE }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+      - name: Install wxWidgets
+        run: vcpkg install --triplet x64-windows-static
+      - name: Configure CMake
+        run: cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows-static
+      - name: Build
+        run: cmake --build build --config Release
+      - name: Package
+        run: |
+          mkdir release
+          cp build/Release/EasyLoginManager.exe release/
+          cp -r build/Release/i18n release/
+          Compress-Archive -Path release/* -DestinationPath EasyLoginManager-Windows.zip
+        shell: pwsh
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyLoginManager-Windows
+          path: EasyLoginManager-Windows.zip
+
   release:
-    needs: [build-macos]
+    needs: [build-macos, build-windows]
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     permissions:
@@ -49,10 +84,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: EasyLoginManager-macOS
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: EasyLoginManager-Windows
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           files: |
             EasyLoginManager.dmg
+            EasyLoginManager-Windows.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
