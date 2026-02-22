@@ -53,14 +53,6 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-      - name: Diagnostic
-        run: |
-          echo "VCPKG_INSTALLATION_ROOT: $env:VCPKG_INSTALLATION_ROOT"
-          dir vcpkg.json
-          cd $env:VCPKG_INSTALLATION_ROOT
-          if (git rev-parse --is-shallow-repository) {
-            git fetch --unshallow
-          }
       - name: Configure CMake
         run: |
           cmake -S . -B build `
