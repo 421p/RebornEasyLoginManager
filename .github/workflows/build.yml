@@ -58,7 +58,9 @@ jobs:
           echo "VCPKG_INSTALLATION_ROOT: $env:VCPKG_INSTALLATION_ROOT"
           dir vcpkg.json
           cd $env:VCPKG_INSTALLATION_ROOT
-          git fetch --unshallow
+          if (git rev-parse --is-shallow-repository) {
+            git fetch --unshallow
+          }
       - name: Configure CMake
         run: |
           cmake -S . -B build `
