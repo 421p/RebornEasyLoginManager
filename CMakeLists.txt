@@ -8,8 +8,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 if(VCPKG_TARGET_TRIPLET MATCHES "static")
     set(wxWidgets_USE_STATIC ON)
 endif()
-find_package(wxWidgets REQUIRED COMPONENTS core base)
-include(${wxWidgets_USE_FILE})
+
+# Try CONFIG mode first (best for vcpkg/manifest)
+find_package(wxWidgets CONFIG)
+if(NOT wxWidgets_FOUND)
+    find_package(wxWidgets REQUIRED COMPONENTS core base)
+endif()
+
+if(wxWidgets_FOUND)
+    include(${wxWidgets_USE_FILE})
+endif()
 
 # Add executable
 if(WIN32)

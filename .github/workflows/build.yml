@@ -42,6 +42,7 @@ jobs:
     runs-on: windows-latest
     env:
       VCPKG_BINARY_SOURCES: "clear;gha,readwrite"
+      VCPKG_DEFAULT_TRIPLET: x64-windows-static
     steps:
       - uses: actions/checkout@v4
       - name: Setup MSVC
@@ -52,12 +53,17 @@ jobs:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+      - name: Diagnostic
+        run: |
+          echo "VCPKG_INSTALLATION_ROOT: $env:VCPKG_INSTALLATION_ROOT"
+          dir vcpkg.json
       - name: Configure CMake
         run: |
           cmake -S . -B build `
             -DCMAKE_BUILD_TYPE=Release `
-            -DCMAKE_TOOLCHAIN_FILE="$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
-            -DVCPKG_TARGET_TRIPLET=x64-windows-static
+            -DCMAKE_TOOLCHAIN_FILE="${env:VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows-static `
+            -DVCPKG_MANIFEST_MODE=ON
       - name: Build
         run: cmake --build build --config Release
       - name: Package
