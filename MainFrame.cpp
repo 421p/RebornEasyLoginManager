@@ -1,10 +1,16 @@
 #include "MainFrame.h"
 #include "AccountDialog.h"
+#include "SettingsDialog.h"
+#include "LanguageManager.h"
 #include <wx/config.h>
 #include <wx/filedlg.h>
 #include <wx/textfile.h>
+#include <wx/icon.h>
 
-MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "L2 Reborn EasyLogin Manager", wxDefaultPosition, wxSize(600, 500)) {
+MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, L("TITLE"), wxDefaultPosition, wxSize(650, 500)) {
+#ifdef __WXMSW__
+    SetIcon(wxIcon("IDI_ICON1", wxBITMAP_TYPE_ICO_RESOURCE));
+#endif
     SetupUI();
     LoadConfig();
 }
@@ -12,54 +18,64 @@ MainFrame::MainFrame() : wxFrame(nullptr, wxID_ANY, "L2 Reborn EasyLogin Manager
 void MainFrame::SetupUI() {
     auto* mainSizer = new wxBoxSizer(wxVERTICAL);
 
-    // Toolbar
+    // Toolbar (Buttons)
     auto* toolbarSizer = new wxBoxSizer(wxHORIZONTAL);
-    auto btnOpen = new wxButton(this, wxID_OPEN, "Open File");
-    auto btnSave = new wxButton(this, wxID_SAVE, "Save");
-    auto btnAdd = new wxButton(this, wxID_ADD, "Add Account");
+    m_btnOpen = new wxButton(this, wxID_OPEN, L("OPEN_FILE"));
+    m_btnSave = new wxButton(this, wxID_SAVE, L("SAVE"));
+    m_btnAdd = new wxButton(this, wxID_ADD, L("ADD_ACCOUNT"));
+    m_btnSettings = new wxButton(this, wxID_ANY, L("MANAGER_SETTINGS"));
 
-    toolbarSizer->Add(btnOpen, 0, wxALL, 5);
-    toolbarSizer->Add(btnSave, 0, wxALL, 5);
-    toolbarSizer->Add(btnAdd, 0, wxALL, 5);
+    toolbarSizer->Add(m_btnOpen, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    toolbarSizer->Add(m_btnSave, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    toolbarSizer->Add(m_btnAdd, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
+    toolbarSizer->Add(m_btnSettings, 0, wxLEFT | wxRIGHT | wxBOTTOM, 5);
 
-    m_chkShowOnStart = new wxCheckBox(this, wxID_ANY, "Show on Start");
-    m_chkHideLogin = new wxCheckBox(this, wxID_ANY, "Hide Login");
-    toolbarSizer->Add(m_chkShowOnStart, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
-    toolbarSizer->Add(m_chkHideLogin, 0, wxALL | wxALIGN_CENTER_VERTICAL, 5);
+    toolbarSizer->AddStretchSpacer();
+
+    wxArrayString choices;
+    choices.Add(wxString::FromUTF8("🇺🇸"));
+    choices.Add(wxString::FromUTF8("🇫🇷"));
+    m_choiceLang = new wxChoice(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
+    
+    wxString currentLang = LanguageManager::Get().GetCurrentLanguage();
+    if (currentLang == "fr") m_choiceLang->SetSelection(1);
+    else m_choiceLang->SetSelection(0);
+
+    toolbarSizer->Add(m_choiceLang, 0, wxLEFT | wxRIGHT | wxBOTTOM | wxALIGN_CENTER_VERTICAL, 5);
 
     mainSizer->Add(toolbarSizer, 0, wxEXPAND);
 
     // List
     m_listView = new wxListView(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxLC_REPORT | wxLC_SINGLE_SEL);
-    m_listView->AppendColumn("Account ID", wxLIST_FORMAT_LEFT, 150);
-    m_listView->AppendColumn("Description", wxLIST_FORMAT_LEFT, 250);
+    m_listView->AppendColumn(L("ACCOUNT_ID"), wxLIST_FORMAT_LEFT, 150);
+    m_listView->AppendColumn(L("DESCRIPTION"), wxLIST_FORMAT_LEFT, 250);
     mainSizer->Add(m_listView, 1, wxEXPAND | wxALL, 10);
 
     // Footer buttons
     auto* footerSizer = new wxBoxSizer(wxHORIZONTAL);
-    auto btnUp = new wxButton(this, wxID_UP, "Move Up");
-    auto btnDown = new wxButton(this, wxID_DOWN, "Move Down");
-    auto btnEdit = new wxButton(this, wxID_EDIT, "Edit");
-    auto btnDel = new wxButton(this, wxID_DELETE, "Delete");
+    m_btnUp = new wxButton(this, wxID_UP, L("MOVE_UP"));
+    m_btnDown = new wxButton(this, wxID_DOWN, L("MOVE_DOWN"));
+    m_btnEdit = new wxButton(this, wxID_EDIT, L("EDIT"));
+    m_btnDel = new wxButton(this, wxID_DELETE, L("DELETE"));
 
-    footerSizer->Add(btnUp, 0, wxALL, 5);
-    footerSizer->Add(btnDown, 0, wxALL, 5);
-    footerSizer->Add(btnEdit, 0, wxALL, 5);
-    footerSizer->Add(btnDel, 0, wxALL, 5);
+    footerSizer->Add(m_btnUp, 0, wxALL, 5);
+    footerSizer->Add(m_btnDown, 0, wxALL, 5);
+    footerSizer->Add(m_btnEdit, 0, wxALL, 5);
+    footerSizer->Add(m_btnDel, 0, wxALL, 5);
     mainSizer->Add(footerSizer, 0, wxALIGN_CENTER);
 
     SetSizer(mainSizer);
 
     // Bindings
-    btnOpen->Bind(wxEVT_BUTTON, &MainFrame::OnOpen, this);
-    btnSave->Bind(wxEVT_BUTTON, &MainFrame::OnSave, this);
-    btnAdd->Bind(wxEVT_BUTTON, &MainFrame::OnAddAccount, this);
-    btnUp->Bind(wxEVT_BUTTON, &MainFrame::OnMoveUp, this);
-    btnDown->Bind(wxEVT_BUTTON, &MainFrame::OnMoveDown, this);
-    btnEdit->Bind(wxEVT_BUTTON, &MainFrame::OnEditAccount, this);
-    btnDel->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteAccount, this);
-    m_chkShowOnStart->Bind(wxEVT_CHECKBOX, &MainFrame::OnToggleShowOnStart, this);
-    m_chkHideLogin->Bind(wxEVT_CHECKBOX, &MainFrame::OnToggleHideLogin, this);
+    m_btnOpen->Bind(wxEVT_BUTTON, &MainFrame::OnOpen, this);
+    m_btnSave->Bind(wxEVT_BUTTON, &MainFrame::OnSave, this);
+    m_btnAdd->Bind(wxEVT_BUTTON, &MainFrame::OnAddAccount, this);
+    m_btnSettings->Bind(wxEVT_BUTTON, &MainFrame::OnSettings, this);
+    m_btnUp->Bind(wxEVT_BUTTON, &MainFrame::OnMoveUp, this);
+    m_btnDown->Bind(wxEVT_BUTTON, &MainFrame::OnMoveDown, this);
+    m_btnEdit->Bind(wxEVT_BUTTON, &MainFrame::OnEditAccount, this);
+    m_btnDel->Bind(wxEVT_BUTTON, &MainFrame::OnDeleteAccount, this);
+    m_choiceLang->Bind(wxEVT_CHOICE, &MainFrame::OnLanguageSelected, this);
     m_listView->Bind(wxEVT_LIST_ITEM_ACTIVATED, [this](wxListEvent&){ 
         wxCommandEvent dummy;
         OnEditAccount(dummy); 
@@ -119,12 +135,13 @@ void MainFrame::OnEditFinish(wxEvent& event) {
     }
 }
 
-void MainFrame::OnToggleShowOnStart(wxCommandEvent& event) {
-    m_showOnStart = event.IsChecked();
-}
-
-void MainFrame::OnToggleHideLogin(wxCommandEvent& event) {
-    m_hideLogin = event.IsChecked();
+void MainFrame::OnSettings(wxCommandEvent&) {
+    SettingsDialog dialog(this, m_showOnStart, m_hideLogin);
+    if (dialog.ShowModal() == wxID_OK) {
+        m_showOnStart = dialog.GetShowOnStart();
+        m_hideLogin = dialog.GetHideLogin();
+        SaveConfig();
+    }
 }
 
 void MainFrame::LoadConfig() {
@@ -142,7 +159,7 @@ void MainFrame::SaveConfig() {
 }
 
 void MainFrame::OnOpen(wxCommandEvent&) {
-    wxFileDialog openFileDialog(this, "Open INI file", "", "", "INI files (*.ini)|*.ini", wxFD_OPEN | wxFD_FILE_MUST_EXIST);
+    wxFileDialog openFileDialog(this, L("OPEN_INI_DIALOG_TITLE"), "", "", L("INI_FILES_WILDCARD"), wxFD_OPEN | wxFD_FILE_MUST_EXIST);
     if (openFileDialog.ShowModal() == wxID_CANCEL) return;
     m_iniPath = openFileDialog.GetPath();
     LoadFile(m_iniPath);
@@ -196,9 +213,6 @@ void MainFrame::LoadFile(const wxString& path) {
             m_accounts.push_back({raw[i].id, raw[i].pass, raw[i].desc});
         }
     }
-
-    m_chkShowOnStart->SetValue(m_showOnStart);
-    m_chkHideLogin->SetValue(m_hideLogin);
 
     RefreshList();
 }
@@ -258,10 +272,10 @@ void MainFrame::UpdateListViewItem(long index) {
 
 void MainFrame::OnAddAccount(wxCommandEvent&) {
     if (m_accounts.size() >= 199) {
-        wxMessageBox("Maximum number of accounts (199) reached.", "Limit", wxOK | wxICON_WARNING);
+        wxMessageBox(L("LIMIT_REACHED_MESSAGE"), L("LIMIT_REACHED_TITLE"), wxOK | wxICON_WARNING);
         return;
     }
-    AccountDialog dialog(this, "Add Account");
+    AccountDialog dialog(this, L("ADD_ACCOUNT_TITLE"));
     if (dialog.ShowModal() == wxID_OK) {
         m_accounts.push_back(dialog.GetAccount());
         long index = m_listView->GetItemCount();
@@ -276,11 +290,47 @@ void MainFrame::OnEditAccount(wxCommandEvent&) {
     long selected = m_listView->GetFirstSelected();
     if (selected == wxNOT_FOUND) return;
 
-    AccountDialog dialog(this, "Edit Account", m_accounts[selected]);
+    AccountDialog dialog(this, L("EDIT_ACCOUNT_TITLE"), m_accounts[selected]);
     if (dialog.ShowModal() == wxID_OK) {
         m_accounts[selected] = dialog.GetAccount();
         UpdateListViewItem(selected);
     }
+}
+
+void MainFrame::OnLanguageSelected(wxCommandEvent&) {
+    int sel = m_choiceLang->GetSelection();
+    wxString langCode = (sel == 1) ? "fr" : "en";
+    
+    if (LanguageManager::Get().LoadLanguage(langCode)) {
+        wxConfig::Get()->Write("/Language", langCode);
+        wxConfig::Get()->Flush();
+        RefreshLabels();
+    }
+}
+
+void MainFrame::RefreshLabels() {
+    SetTitle(L("TITLE"));
+    m_btnOpen->SetLabel(L("OPEN_FILE"));
+    m_btnSave->SetLabel(L("SAVE"));
+    m_btnAdd->SetLabel(L("ADD_ACCOUNT"));
+    m_btnSettings->SetLabel(L("MANAGER_SETTINGS"));
+    
+    m_btnUp->SetLabel(L("MOVE_UP"));
+    m_btnDown->SetLabel(L("MOVE_DOWN"));
+    m_btnEdit->SetLabel(L("EDIT"));
+    m_btnDel->SetLabel(L("DELETE"));
+    
+    wxListItem item0;
+    m_listView->GetColumn(0, item0);
+    item0.SetText(L("ACCOUNT_ID"));
+    m_listView->SetColumn(0, item0);
+    
+    wxListItem item1;
+    m_listView->GetColumn(1, item1);
+    item1.SetText(L("DESCRIPTION"));
+    m_listView->SetColumn(1, item1);
+    
+    Layout();
 }
 
 void MainFrame::OnDeleteAccount(wxCommandEvent&) {

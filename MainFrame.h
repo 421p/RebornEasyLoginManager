@@ -21,14 +21,14 @@ private:
 
     bool m_showOnStart = false;
     bool m_hideLogin = false;
-    wxCheckBox* m_chkShowOnStart{};
-    wxCheckBox* m_chkHideLogin{};
+    wxChoice* m_choiceLang{};
 
     void SetupUI();
+    void RefreshLabels();
+    void OnLanguageSelected(wxCommandEvent&);
+    void OnSettings(wxCommandEvent&);
     void OnLeftDClick(wxMouseEvent& event);
     void OnEditFinish(wxEvent& event);
-    void OnToggleShowOnStart(wxCommandEvent&);
-    void OnToggleHideLogin(wxCommandEvent&);
     void LoadConfig();
     void SaveConfig();
     void OnOpen(wxCommandEvent&);
@@ -41,6 +41,16 @@ private:
     void OnDeleteAccount(wxCommandEvent&);
     void OnMoveUp(wxCommandEvent&);
     void OnMoveDown(wxCommandEvent&);
+    
+    // UI elements that need refreshing
+    wxButton* m_btnOpen{};
+    wxButton* m_btnSave{};
+    wxButton* m_btnAdd{};
+    wxButton* m_btnSettings{};
+    wxButton* m_btnUp{};
+    wxButton* m_btnDown{};
+    wxButton* m_btnEdit{};
+    wxButton* m_btnDel{};
 };
 
 #endif // MAINFRAME_H
