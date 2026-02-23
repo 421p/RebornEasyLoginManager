@@ -12,6 +12,7 @@ public:
     MainFrame();
 
 private:
+    wxPanel* m_mainPanel{};
     wxListView* m_listView{};
     wxTextCtrl* m_editCtrl{};
     long m_editingItem = -1;

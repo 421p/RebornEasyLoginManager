@@ -6,17 +6,20 @@ AccountDialog::AccountDialog(wxWindow* parent, const wxString& title, const Acco
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize) {
 
     auto* mainSizer = new wxBoxSizer(wxVERTICAL);
+    auto* panel = new wxPanel(this);
+    auto* panelSizer = new wxBoxSizer(wxVERTICAL);
+    
     auto gridSizer = new wxFlexGridSizer(2, 5, 5);
     gridSizer->AddGrowableCol(1, 1);
 
-    gridSizer->Add(new wxStaticText(this, wxID_ANY, L("ACCOUNT_ID_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
-    m_idCtrl = new wxTextCtrl(this, wxID_ANY, acc.id);
+    gridSizer->Add(new wxStaticText(panel, wxID_ANY, L("ACCOUNT_ID_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
+    m_idCtrl = new wxTextCtrl(panel, wxID_ANY, acc.id);
     gridSizer->Add(m_idCtrl, 1, wxEXPAND);
 
-    gridSizer->Add(new wxStaticText(this, wxID_ANY, L("PASSWORD_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
+    gridSizer->Add(new wxStaticText(panel, wxID_ANY, L("PASSWORD_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
     auto* passSizer = new wxBoxSizer(wxHORIZONTAL);
-    m_passCtrl = new wxTextCtrl(this, wxID_ANY, acc.password, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
-    m_revealBtn = new wxButton(this, wxID_ANY, "View", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+    m_passCtrl = new wxTextCtrl(panel, wxID_ANY, acc.password, wxDefaultPosition, wxDefaultSize, wxTE_PASSWORD);
+    m_revealBtn = new wxButton(panel, wxID_ANY, "View", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
 #ifdef __WXMSW__
     m_revealBtn->SetBitmap(wxArtProvider::GetBitmap(wxART_FIND, wxART_BUTTON));
 #endif
@@ -24,11 +27,14 @@ AccountDialog::AccountDialog(wxWindow* parent, const wxString& title, const Acco
     passSizer->Add(m_revealBtn, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, 5);
     gridSizer->Add(passSizer, 1, wxEXPAND);
 
-    gridSizer->Add(new wxStaticText(this, wxID_ANY, L("DESCRIPTION_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
-    m_descCtrl = new wxTextCtrl(this, wxID_ANY, acc.description);
+    gridSizer->Add(new wxStaticText(panel, wxID_ANY, L("DESCRIPTION_LABEL")), 0, wxALIGN_CENTER_VERTICAL);
+    m_descCtrl = new wxTextCtrl(panel, wxID_ANY, acc.description);
     gridSizer->Add(m_descCtrl, 1, wxEXPAND);
 
-    mainSizer->Add(gridSizer, 1, wxEXPAND | wxALL, 10);
+    panelSizer->Add(gridSizer, 1, wxEXPAND | wxALL, 10);
+    panel->SetSizer(panelSizer);
+
+    mainSizer->Add(panel, 1, wxEXPAND);
     mainSizer->Add(CreateButtonSizer(wxOK | wxCANCEL), 0, wxALIGN_RIGHT | wxALL, 10);
 
     SetSizerAndFit(mainSizer);
@@ -60,7 +66,7 @@ void AccountDialog::OnToggleReveal(wxCommandEvent&) {
     m_passCtrl->Destroy();
     
     long newStyle = m_revealed ? 0 : wxTE_PASSWORD;
-    m_passCtrl = new wxTextCtrl(this, id, val, wxDefaultPosition, wxDefaultSize, newStyle);
+    m_passCtrl = new wxTextCtrl(m_revealBtn->GetParent(), id, val, wxDefaultPosition, wxDefaultSize, newStyle);
     
     sizer->Prepend(m_passCtrl, proportion, flags);
     sizer->Layout();
