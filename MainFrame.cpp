@@ -42,13 +42,13 @@ void MainFrame::SetupUI() {
     toolbarSizer->AddStretchSpacer();
 
     wxArrayString choices;
-    choices.Add("English");
-    choices.Add("Français");
-    choices.Add("Ελληνικά");
-    choices.Add("Português");
-    choices.Add("Polski");
-    choices.Add("Иρον");
-    choices.Add("中文");
+    choices.Add(wxString::FromUTF8("English"));
+    choices.Add(wxString::FromUTF8("Français"));
+    choices.Add(wxString::FromUTF8("Ελληνικά"));
+    choices.Add(wxString::FromUTF8("Português"));
+    choices.Add(wxString::FromUTF8("Polski"));
+    choices.Add(wxString::FromUTF8("Иρον"));
+    choices.Add(wxString::FromUTF8("中文"));
     m_choiceLang = new wxChoice(m_mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
     
     wxString currentLang = LanguageManager::Get().GetCurrentLanguage();
