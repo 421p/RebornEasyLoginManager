@@ -1,16 +1,11 @@
 # Reborn Easy Login Manager
 
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS-lightgrey)](https://github.com/l2reborn/EasyLoginManager)
-[![Download](https://img.shields.io/badge/download-latest-blue)](https://github.com/421p/RebornEasyLoginManager/releases/)
+[![Windows Download](https://img.shields.io/badge/Download-Windows-blue?style=for-the-badge&logo=windows)](https://github.com/421p/RebornEasyLoginManager/releases/latest/download/EasyLoginManager.exe)
+[![macOS Download](https://img.shields.io/badge/Download-macOS-white?style=for-the-badge&logo=apple&logoColor=black)](https://github.com/421p/RebornEasyLoginManager/releases/latest/download/EasyLoginManager.dmg)
+
 
 A lightweight, cross-platform account manager designed for Lineage II players. Securely manage your accounts, passwords, and descriptions with ease.
 
----
-
-### Download
-
-You can find the latest releases for Windows and macOS here:
-[**Download Latest Version**](https://github.com/421p/RebornEasyLoginManager/releases/)
 
 ### Features
 
@@ -22,7 +17,7 @@ You can find the latest releases for Windows and macOS here:
   - **macOS**: Native `.app` bundle with DMG installer.
 - **Modern UI**: Built with wxWidgets for a native look and feel on all platforms.
 
-### Getting Started
+### Development
 
 #### Prerequisites
 - **Windows**: `vcpkg` (for dependency management).
