@@ -44,10 +44,20 @@ void MainFrame::SetupUI() {
     wxArrayString choices;
     choices.Add("English");
     choices.Add("Français");
+    choices.Add("Ελληνικά");
+    choices.Add("Português");
+    choices.Add("Polski");
+    choices.Add("Иρον");
+    choices.Add("中文");
     m_choiceLang = new wxChoice(m_mainPanel, wxID_ANY, wxDefaultPosition, wxDefaultSize, choices);
     
     wxString currentLang = LanguageManager::Get().GetCurrentLanguage();
     if (currentLang == "fr") m_choiceLang->SetSelection(1);
+    else if (currentLang == "el") m_choiceLang->SetSelection(2);
+    else if (currentLang == "pt") m_choiceLang->SetSelection(3);
+    else if (currentLang == "pl") m_choiceLang->SetSelection(4);
+    else if (currentLang == "os") m_choiceLang->SetSelection(5);
+    else if (currentLang == "zh") m_choiceLang->SetSelection(6);
     else m_choiceLang->SetSelection(0);
 
     m_choiceLang->SetMinSize(wxSize(100, -1));
@@ -320,7 +330,16 @@ void MainFrame::OnEditAccount(wxCommandEvent&) {
 
 void MainFrame::OnLanguageSelected(wxCommandEvent&) {
     int sel = m_choiceLang->GetSelection();
-    wxString langCode = (sel == 1) ? "fr" : "en";
+    wxString langCode;
+    switch (sel) {
+        case 1: langCode = "fr"; break;
+        case 2: langCode = "el"; break;
+        case 3: langCode = "pt"; break;
+        case 4: langCode = "pl"; break;
+        case 5: langCode = "os"; break;
+        case 6: langCode = "zh"; break;
+        default: langCode = "en"; break;
+    }
     
     if (LanguageManager::Get().LoadLanguage(langCode)) {
         wxConfig::Get()->Write("/Language", langCode);

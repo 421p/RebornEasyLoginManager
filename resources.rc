@@ -5,3 +5,8 @@ IDI_ICON1 ICON "icon.ico"
 // Translations
 ID_I18N_EN RCDATA "i18n/en.json"
 ID_I18N_FR RCDATA "i18n/fr.json"
+ID_I18N_EL RCDATA "i18n/el.json"
+ID_I18N_PT RCDATA "i18n/pt.json"
+ID_I18N_PL RCDATA "i18n/pl.json"
+ID_I18N_OS RCDATA "i18n/os.json"
+ID_I18N_ZH RCDATA "i18n/zh.json"

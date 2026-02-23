@@ -16,7 +16,7 @@ You can find the latest releases for Windows and macOS here:
 
 - **Multi-Account Management**: Easily add, edit, and organize multiple accounts.
 - **Inline Editing**: Quickly update account descriptions with double-click support.
-- **Internationalization**: Full support for English and French languages.
+- **Internationalization**: Full support for English, French, Greek, Portuguese, Polish, Ossetian, and Chinese.
 - **Portable & Compact**: 
   - **Windows**: Single-file distribution! All translations are embedded directly into the executable.
   - **macOS**: Native `.app` bundle with DMG installer.
@@ -61,6 +61,11 @@ cmake --build build --config Release
 We currently support:
 - English (`en.json`)
 - French (`fr.json`)
+- Greek (`el.json`)
+- Portuguese (`pt.json`)
+- Polish (`pl.json`)
+- Ossetian (`os.json`)
+- Chinese (`zh.json`)
 
 To contribute a new translation, simply add a new `.json` file to the `i18n/` directory and update the `LanguageManager` and UI.
 

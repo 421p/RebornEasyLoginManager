@@ -48,7 +48,15 @@ add_executable(EasyLoginManager MACOSX_BUNDLE
 )
 
 # i18n
-set(I18N_FILES i18n/en.json i18n/fr.json)
+set(I18N_FILES 
+        i18n/en.json 
+        i18n/fr.json 
+        i18n/el.json 
+        i18n/pt.json 
+        i18n/pl.json 
+        i18n/os.json 
+        i18n/zh.json
+)
 if(APPLE)
     set_source_files_properties(${I18N_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources/i18n")
     target_sources(EasyLoginManager PRIVATE ${I18N_FILES})
