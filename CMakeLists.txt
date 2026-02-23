@@ -89,7 +89,8 @@ if(APPLE)
     )
 endif()
 
-# Windows specific: remove console window
+# Windows specific: remove console window and set UTF-8 encoding
 if(WIN32)
     set_target_properties(EasyLoginManager PROPERTIES WIN32_EXECUTABLE TRUE)
+    target_compile_options(EasyLoginManager PRIVATE /utf-8)
 endif()

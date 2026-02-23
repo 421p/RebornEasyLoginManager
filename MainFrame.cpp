@@ -73,6 +73,16 @@ void MainFrame::SetupUI() {
 #endif
     m_listView->AppendColumn(L("ACCOUNT_ID"), wxLIST_FORMAT_LEFT, 150);
     m_listView->AppendColumn(L("DESCRIPTION"), wxLIST_FORMAT_LEFT, 250);
+    
+    m_listView->Bind(wxEVT_SIZE, [this](wxSizeEvent& event) {
+        int width = event.GetSize().GetWidth();
+        int col0Width = m_listView->GetColumnWidth(0);
+        if (width > col0Width + 20) {
+            m_listView->SetColumnWidth(1, width - col0Width - 20);
+        }
+        event.Skip();
+    });
+
     mainSizer->Add(m_listView, 1, wxEXPAND | wxALL, 10);
 
     // Footer buttons
