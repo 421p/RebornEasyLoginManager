@@ -83,18 +83,11 @@ jobs:
       - name: Build
         run: cmake --build build --config Release --parallel
 
-      - name: Package
-        run: |
-          mkdir release
-          cp build/Release/EasyLoginManager.exe release/
-          Compress-Archive -Path release/* -DestinationPath EasyLoginManager-Windows.zip
-        shell: pwsh
-
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: EasyLoginManager-Windows
-          path: EasyLoginManager-Windows.zip
+          path: build/Release/EasyLoginManager.exe
 
   release:
     needs: [build-macos, build-windows]
@@ -118,6 +111,6 @@ jobs:
         with:
           files: |
             EasyLoginManager.dmg
-            EasyLoginManager-Windows.zip
+            EasyLoginManager.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
